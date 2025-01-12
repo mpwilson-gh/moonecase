@@ -11,15 +11,16 @@ include <pi_zero_panel.scad>
 module cut_outs() {
     // Debugging with union.
 
+    sc_x_diff = wall_thickness;
+    sc_y_diff = (Width - sp_cutout_width) / 2;
 
     difference () {
         shell();
 
 
         //translate([ (Width / 2 - sp_width), 0, -20]) {
-        sc_x_diff = wall_thickness;
-        sc_y_diff = (Width - sp_cutout_width) / 2;
         translate([(Length - sp_cutout_width) - sc_x_diff,sc_y_diff,-1])
+        //translate([(Length - sp_cutout_width) - wall_thickness,(Width - sp_cutout_width) / 2,-1])
         {
         speaker_cutout();
         }
@@ -33,27 +34,32 @@ module cut_outs() {
 }
 
 module with_panels() {
+
+    sc_x_diff = wall_thickness;
+    sc_y_diff = (Width - sp_cutout_width) / 2;
+
     union () {
         cut_outs();
 
 
-        translate([(Length - sp_cutout_width) - sc_x_diff,sc_y_diff,0])
+        // This is fine without the rotation.
+        //translate([(Length - sp_cutout_width) - sc_x_diff,sc_y_diff,0])
+
+        translate([(sp_cutout_width * 2) ,sp_cutout_height + sc_y_diff,0])
         {
+            rotate([0,0,180])
             speaker_panel();
         }
 
         translate([sc_x_diff,sc_y_diff,0])
         {
+            
         speaker_panel();
         }
 
 
     }
-
 }
-
-// with_panels();
-//cut_outs(); 
 
 module lid_cut_outs() {
 //        pco_x_diff = (Length - base_plate_width) / 2 - (wall_thickness / 2);
@@ -89,9 +95,16 @@ module lid_added_panels() {
 
 }
 
+module final_base() {
+    with_panels();
+}
+module final_lid() {
+    lid_added_panels();
 
-with_panels();
-lid_added_panels();
+}
 
+// speaker_panel();
+ final_base();
+// final_lid();
 
-//lid_cut_outs();
+ // full_lid();

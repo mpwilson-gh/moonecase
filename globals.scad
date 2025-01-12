@@ -56,18 +56,19 @@ mounting_hole_diameter = 3;  // in mm
 mounting_hole_offset = 3.5;  // in mm
 
 // Micro-USB port placeholder parameters
+/*
 usb_hole_width = 10;  // in mm
 usb_hole_height = 5;  // in mm
 usb_screw_diameter = 2;  // in mm
 usb_screw_offset = 2;    // in mm
-
+*/
 // Speaker parameters
-speaker_recess = 9.53;  // in mm
-speaker_offset_from_side = 5;  // in mm
+// speaker_recess = 9.53;  // in mm
+// speaker_offset_from_side = 5;  // in mm
 
 // Screw tab parameters
-screw_tab_height = Thickness * 2;  // in mm
-screw_tab_diameter = mounting_hole_diameter * 2;  // in mm
+// screw_tab_height = Thickness * 2;  // in mm
+// screw_tab_diameter = mounting_hole_diameter * 2;  // in mm
 
 // ====================
 // Helper Functions

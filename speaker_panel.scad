@@ -9,8 +9,8 @@ include <hole.scad>
 // Speaker parameters
 speaker_size = 28.575;  // 1 1/8" square
 
-sp_width = 30;
-sp_height = 32;
+sp_width = 32;
+sp_height = 30;
 
 
 sp_thickness = Thickness;
@@ -53,6 +53,16 @@ module speaker_panel_base() {
         hole([spb_outer_width / 2,sp_border_width/2,0], mounting_hole_diameter, sp_thickness*2, countersink=false);
 
         hole([spb_outer_width / 2,spb_outer_height - (sp_border_width / 2),0], mounting_hole_diameter, sp_thickness*2, countersink=false);
+
+
+        offset = 2;
+        ch = sp_border_width + offset;
+        cr1 = 0;
+        cr2 = sp_thickness;
+
+        translate([0,sp_cutout_height / 2,sp_border_width/1.5])
+        rotate([0,90,0])
+        cylinder(h=ch,r1=cr1,r2=cr2);
     }
 }
 
