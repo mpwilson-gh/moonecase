@@ -1,7 +1,7 @@
 
 // begin speaker_panel.scad
 
-include <globals.scad>
+//include <globals.scad>
 include <hole.scad>
 
 //Thickness = 3;
@@ -21,6 +21,14 @@ sp_thickness = Thickness;
 // 0.24: 6.096
 
 sp_border_width = 8;  // no idea if this is right.  I'm thinking 3/8"
+
+
+// ------------------------------------------------------------------------------
+// Mounting hole parameters
+// ------------------------------------------------------------------------------
+mounting_hole_diameter = 3;  // in mm
+mounting_hole_offset = 3.5;  // in mm
+
 
 //speaker_panel_size = speaker_size + (2 * border_width);
 

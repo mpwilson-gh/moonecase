@@ -1,7 +1,6 @@
 
 // hole.scad
 
-include <globals.scad>;
 
 // Generic hole module with optional countersink
 module hole(position, diameter, height, countersink=false, countersink_diameter=6, countersink_depth=1, fn=30) {

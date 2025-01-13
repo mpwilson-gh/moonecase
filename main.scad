@@ -1,15 +1,19 @@
 
 
+// begin main.scad
 
 include <moonecase_3.scad>
 
-// Cut outs and panels.
-
 include <speaker_panel.scad>
-include <pi_zero_panel.scad>
 
-module cut_outs() {
-    // Debugging with union.
+include <composite_lid_panel.scad>
+
+include <micro_usb_cutout.scad>
+
+
+DefaultPcbThickness = 1.6; // It's true.  I read it on the internet.
+
+module shell_minus_cut_outs() {
 
     sc_x_diff = wall_thickness;
     sc_y_diff = (Width - sp_cutout_width) / 2;
@@ -17,33 +21,49 @@ module cut_outs() {
     difference () {
         shell();
 
-
-        //translate([ (Width / 2 - sp_width), 0, -20]) {
         translate([(Length - sp_cutout_width) - sc_x_diff,sc_y_diff,-1])
-        //translate([(Length - sp_cutout_width) - wall_thickness,(Width - sp_cutout_width) / 2,-1])
         {
-        speaker_cutout();
+          speaker_cutout();
         }
         
-        //translate([-100,-100,-20])
         translate([sc_x_diff,sc_y_diff,-1])
         {
-        speaker_cutout();
+          speaker_cutout();
+        }
+
+
+        // This block is repeated later.  This is the only one
+        // That actually needs to exist since the usb cutout is JuST a cut out.
+        // But putting the conditional guides in seemed to make more sense in the 
+        // additive section.
+        // I was just rushing through at this point.  This is the last feature.
+        
+        box_length = Length;
+        which_pi = "pi_zero_two";
+        lid_length = get_lid_length_x(box_length,wall_thickness);
+        pipanel_length_x = get_pipanel_length_x(which_pi);
+        power_usb_offset = get_pi_power_usb_offset(which_pi);
+        pipanel_offset_x = ( lid_length - pipanel_length_x) / 2;
+
+        muc_x1 = get_muc_x_offset(wall_thickness,pipanel_offset_x,power_usb_offset);
+        muc_y1 = get_muc_y_offset();
+        muc_z1 = get_muc_z_offset(wall_thickness,get_pipanel_riser_height(),DefaultPcbThickness);  // pcb measures at roughly 0.
+
+
+        translate([muc_x1,muc_y1,muc_z1])
+        {
+            micro_usb_cutout(wall_thickness);
         }
     }
 }
 
-module with_panels() {
+module shell_with_panels() {
 
     sc_x_diff = wall_thickness;
     sc_y_diff = (Width - sp_cutout_width) / 2;
 
     union () {
-        cut_outs();
-
-
-        // This is fine without the rotation.
-        //translate([(Length - sp_cutout_width) - sc_x_diff,sc_y_diff,0])
+        shell_minus_cut_outs();
 
         translate([(sp_cutout_width * 2) ,sp_cutout_height + sc_y_diff,0])
         {
@@ -53,58 +73,100 @@ module with_panels() {
 
         translate([sc_x_diff,sc_y_diff,0])
         {
-            
-        speaker_panel();
+            speaker_panel();
         }
+
+
+        // usb cutout guide lines.
+        if ($preview)
+            {
+                // Most of this block is repeated from the usb cutout block above.
+                // I was just rushing through it at this point.
+
+                box_length = Length;
+                which_pi = "pi_zero_two";
+                lid_length = get_lid_length_x(box_length,wall_thickness);
+                pipanel_length_x = get_pipanel_length_x(which_pi);
+                power_usb_offset = get_pi_power_usb_offset(which_pi);
+                pipanel_offset_x = ( lid_length - pipanel_length_x) / 2;
+
+                muc_x1 = get_muc_x_offset(wall_thickness,pipanel_offset_x,power_usb_offset);
+                muc_y1 = get_muc_y_offset();
+                muc_z1 = get_muc_z_offset(wall_thickness,get_pipanel_riser_height(),DefaultPcbThickness);  // pcb measures at roughly 0.
+
+                muc_x2 = muc_x1 + get_muc_length_x() ;
+                muc_y2 = muc_y1 + get_muc_depth_y(wall_thickness);
+                muc_z2 = muc_z1 + get_muc_height_z();
+
+
+                color("black") translate([muc_x1,0,muc_z1]) cube([1,400,1],true);
+                color("black") translate([muc_x1,0,muc_z2]) cube([1,400,1],true);
+                color("black") translate([muc_x2,0,muc_z1]) cube([1,400,1],true);
+                color("black") translate([muc_x2,0,muc_z2]) cube([1,400,1],true);
+
+            }
 
 
     }
 }
 
-module lid_cut_outs() {
-//        pco_x_diff = (Length - base_plate_width) / 2 - (wall_thickness / 2);
-        pco_x_diff = (Length - base_plate_width) / 2 ;
-        pco_y_diff = (- (Width -  base_plate_depth) / 2 )- wall_thickness;
-        echo("Length/Width:",Length,Width);
-        echo("bp width/depth:", base_plate_width,base_plate_depth);
-        echo("xdiff/ydiff:",pco_x_diff,pco_y_diff);
+module final_lid() 
+{
 
-    difference() {
-        full_lid();
+    lid_inset       = get_lid_inset_scalar(wall_thickness);
+    lid_hole_scalar = get_hole_placement_scalar(Screw_Post_Offset,wall_thickness);
 
-        translate([pco_x_diff,pco_y_diff + (lid_offset / 2),0])  
+    lid_length_x = get_lid_length_x(Length,wall_thickness);
+    lid_width_y  = get_lid_width_y(Width,wall_thickness);
+
+    lh_x1 = lid_hole_scalar;
+    lh_y1 = lid_hole_scalar;
+    lh_x2 = lid_length_x - lid_hole_scalar;
+    lh_y2 = lid_width_y - lid_hole_scalar;
+
+
+
+    // Lid with debug guides.
+    translate([lid_inset,0,0])
+    {
+        translate([0,-70,0])
         {
-            pi_zero_cutout();
+            lid_added_panels(Length,Width,wall_thickness,screw,Screw_Post_Offset,"pi_zero_two");
+            if ($preview)
+            {
+                color("blue") translate([lh_x1,0,-2]) cube([1,400,1],true);
+                color("blue") translate([lh_x2,0,-2]) cube([1,400,1],true);
+                color("blue") translate([0,lh_y1,-2]) cube([400,1,1],true);
+                color("blue") translate([0,lh_y2,-2]) cube([400,1,1],true);
+            }
         }
     }
-
 }
 
-module lid_added_panels() {
-        pco_x_diff = (Length - base_plate_width) / 2 ;
-        pco_y_diff = (- (Width -  base_plate_depth) / 2 )- wall_thickness;
 
-    union () {
-        full_lid();
+module final_shell() 
+{
 
-        translate([pco_x_diff,pco_y_diff + (lid_offset / 2),0])  
-        {
-            pi_zero_panel();
-        }
+    if ($preview)
+    {
+        offsets = get_abs_screw_stand_insets();
+        x1 = offsets[0];
+        y1 = offsets[1];
+        x2 = offsets[2];
+        y2 = offsets[3];
+
+        echo("Shell Offsets: ",offsets);
+        color("red") translate([x1,0,-1]) cube([1,400,1],true);
+        color("red") translate([x2,0,-1]) cube([1,400,1],true);
+        color("red") translate([0,y1,-1]) cube([400,1,1],true);
+        color("red") translate([0,y2,-1]) cube([400,1,1],true);
     }
 
-}
-
-module final_base() {
-    with_panels();
-}
-module final_lid() {
-    lid_added_panels();
+    shell_with_panels();
 
 }
 
-// speaker_panel();
- final_base();
-// final_lid();
+final_shell();
+final_lid();
 
- // full_lid();
+// end main.scad
