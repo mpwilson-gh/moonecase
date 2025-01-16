@@ -49,8 +49,29 @@ module shell_minus_cut_outs() {
         muc_y1 = get_muc_y_offset();
         muc_z1 = get_muc_z_offset(wall_thickness,get_pipanel_riser_height(),DefaultPcbThickness);  // pcb measures at roughly 0.
 
+        muc_x2 = muc_x1 + get_muc_length_x() ;
+        muc_y2 = muc_y1 + get_muc_depth_y(wall_thickness);
+        muc_z2 = muc_z1 + get_muc_height_z();
 
-        translate([muc_x1,muc_y1,muc_z1])
+        x1 = Length - muc_x2;
+        x2 = x1 + get_muc_length_x() ;
+
+        y1 = get_muc_y_offset();
+        y2 = y1 + get_muc_depth_y(wall_thickness);
+
+        z1 = Height - muc_z2;
+        z2 = z1 + get_muc_height_z();
+
+        if ($preview)
+        {
+            color("blue") translate([x1,0,z1]) cube([1,400,1],true);
+            color("green") translate([x1,0,z2]) cube([1,400,1],true);
+            color("blue") translate([x2,0,z1]) cube([1,400,1],true);
+            color("green") translate([x2,0,z2]) cube([1,400,1],true);
+        }
+
+
+        translate([x1,y1,z1])
         {
             micro_usb_cutout(wall_thickness);
         }
@@ -80,6 +101,7 @@ module shell_with_panels() {
         // usb cutout guide lines.
         if ($preview)
             {
+                /*
                 // Most of this block is repeated from the usb cutout block above.
                 // I was just rushing through it at this point.
 
@@ -98,11 +120,21 @@ module shell_with_panels() {
                 muc_y2 = muc_y1 + get_muc_depth_y(wall_thickness);
                 muc_z2 = muc_z1 + get_muc_height_z();
 
+                x1 = Length - muc_x2;
+                x2 = x1 + get_muc_length_x() ;
 
-                color("black") translate([muc_x1,0,muc_z1]) cube([1,400,1],true);
-                color("black") translate([muc_x1,0,muc_z2]) cube([1,400,1],true);
-                color("black") translate([muc_x2,0,muc_z1]) cube([1,400,1],true);
-                color("black") translate([muc_x2,0,muc_z2]) cube([1,400,1],true);
+                y1 = get_muc_y_offset();
+                y2 = y1 + get_muc_depth_y(wall_thickness);
+
+                z1 = Height - muc_z2;
+                z2 = z1 + get_muc_height_z();
+
+                
+                color("blue") translate([x1,0,z1]) cube([1,400,1],true);
+                color("green") translate([x1,0,z2]) cube([1,400,1],true);
+                color("blue") translate([x2,0,z1]) cube([1,400,1],true);
+                color("green") translate([x2,0,z2]) cube([1,400,1],true);
+*/
 
             }
 
@@ -127,7 +159,10 @@ module final_lid()
 
 
     // Lid with debug guides.
-    translate([lid_inset,0,0])
+    echo("Lid Inset: ",lid_inset);
+    echo("Lid X:", lid_length_x)
+    translate([lid_inset / 2,0,0])
+    //translate([lid_inset / 2,lid_inset / 2,0])
     {
         translate([0,-70,0])
         {
@@ -168,5 +203,6 @@ module final_shell()
 
 final_shell();
 final_lid();
+
 
 // end main.scad

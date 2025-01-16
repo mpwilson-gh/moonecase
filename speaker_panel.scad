@@ -57,11 +57,27 @@ module speaker_panel_base() {
         translate([sp_border_width,sp_border_width,-1]) // "-1" is to push it low and punch all the way through.
          cube([sp_width,sp_height,sp_thickness * 2.2]); // * 2.2 is to make the "die" bigger than the blank it's punching through.
 
+
+
+/*
+module countersink_hole(screw_diameter,wall_thickness)
+{
+    cs_diameter = get_hole_countersink_diameter(screw_diameter);
+    cs_depth    = get_hole_countersink_depth(wall_thickness);
+
+    cylinder(d=cs_diameter,h=cs_depth,$fn=10); 
+}
+*/
+
         // Now the orientation matters.  We need 2 screw holes.
+        /*
         hole([spb_outer_width / 2,sp_border_width/2,0], mounting_hole_diameter, sp_thickness*2, countersink=false);
 
         hole([spb_outer_width / 2,spb_outer_height - (sp_border_width / 2),0], mounting_hole_diameter, sp_thickness*2, countersink=false);
+*/
+        hole([spb_outer_width / 2,sp_border_width/2,0], mounting_hole_diameter, sp_thickness*2, countersink=true);
 
+        hole([spb_outer_width / 2,spb_outer_height - (sp_border_width / 2),0], mounting_hole_diameter, sp_thickness*2, countersink=true);
 
         offset = 2;
         ch = sp_border_width + offset;

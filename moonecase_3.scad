@@ -5,6 +5,7 @@ Height = 45;
 Thickness = 5;
 wall_thickness = Thickness; //wall thickness
 
+include <screw_holes.scad>
 module outer_wall()
 {
     
@@ -50,7 +51,11 @@ module screw_stand_single()
     difference()
     {
         cylinder(scpo_height,d=scpo_diameter);
-        cylinder(scpo_height,d=screw);
+        // n-1
+        //cylinder(scpo_height,d=screw);
+        shd = get_screw_hole_diameter_mm(screw);
+        echo("Screw pitch vs hole diameter:",screw,shd);
+        cylinder(scpo_height,d=get_screw_hole_diameter_mm(screw));
     }
 }
 

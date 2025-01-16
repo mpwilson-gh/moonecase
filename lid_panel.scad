@@ -1,19 +1,27 @@
 
 
-DefaultLidClearance = 0.1;
+include <screw_holes.scad>
+
+DefaultLidClearance = 0;
 
 function get_lid_inset_scalar(thickness) = thickness / 2 + DefaultLidClearance;
 
+/*
 function get_lid_length_x(box_length,thickness) = (box_length - (get_lid_inset_scalar(thickness) * 2)) - DefaultLidClearance;
 function get_lid_width_y(box_width,thickness) = (box_width - (get_lid_inset_scalar(thickness) * 2)) - DefaultLidClearance;
+*/
+function get_lid_length_x(box_length,thickness) = (box_length - (get_lid_inset_scalar(thickness) )) - DefaultLidClearance;
+function get_lid_width_y(box_width,thickness) = (box_width - (get_lid_inset_scalar(thickness) )) - DefaultLidClearance;
+
 
 function get_lid_thickness(thickness) = thickness; // For debugging we're gonna make this 1.
 
 
 // Takes post offset and wall thickness.  Computes lid inset.
-function get_hole_placement_scalar(box_post_offset,wall_thickness) = box_post_offset + get_lid_inset_scalar(wall_thickness);
+function get_hole_placement_scalar(box_post_offset,wall_thickness) = box_post_offset + (get_lid_inset_scalar(wall_thickness) * 2);
 //function get_hole_placement_scalar(box_post_offset,wall_thickness,lid_inset) = box_post_offset + lid_inset + wall_thickness;
-function get_hole_diameter(screw_diameter) = screw_diameter;
+//function get_hole_diameter(screw_diameter) = get_screw_hole_diameter_mm(screw_diameter);
+function get_screw_hole_diameter(screw_diameter) = get_screw_hole_diameter_mm(screw_diameter);
 
 // ------------------------------------------------------------------------------------
 // These should be hardware specific, not relative.  But we need to start somewhere.
@@ -31,7 +39,8 @@ function get_hole_countersink_placement_scalar(box_post_offset,wall_thickness) =
 module lid_hole(screw_diameter,wall_thickness)
 {
     //echo("lid_hole():",screw_diameter,wall_thickness);
-    cylinder(d=screw_diameter,h=wall_thickness,$fn=10); // Low res hole gives the screw more to bite on.
+    hole_diameter =  get_screw_hole_diameter(screw_diameter);
+    cylinder(d=hole_diameter,h=wall_thickness,$fn=10); // Low res hole gives the screw more to bite on.
 }
 module countersink_hole(screw_diameter,wall_thickness)
 {
